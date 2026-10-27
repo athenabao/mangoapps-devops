@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A simple shared task board deployed on Amazon EC2.">
+  <title>Taskboard</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <main class="shell">
+    <header class="topline">
+      <a class="brand" href="/">taskboard<span class="brand-dot">.</span></a>
+      <span class="badge">PUBLIC DEMO</span>
+    </header>
+    <section class="intro">
+      <p class="eyebrow">A LITTLE LESS SOMEDAY.</p>
+      <h1>Make room for<br>getting things done.</h1>
+      <p class="lede">A simple place to turn your next idea into your next small win.</p>
+    </section>
+    <section class="board" aria-labelledby="tasks-title">
+      <div class="board-heading">
+        <div><p class="eyebrow">YOUR LIST</p><h2 id="tasks-title">One thing at a time.</h2></div>
+        <span class="count">{{ completed }} / {{ tasks|length }} done</span>
+      </div>
+      <form class="add-form" action="{{ url_for('add_task') }}" method="post">
+        <input type="hidden" name="csrf_token" value="{{ session['csrf_token'] }}">
+        <label class="sr-only" for="title">New task</label>
+        <input id="title" name="title" placeholder="What's next on your list?" maxlength="160" required autocomplete="off">
+        <button class="add-button" type="submit">Add task <span aria-hidden="true">+</span></button>
+      </form>
+      {% if tasks %}
+      <ul class="tasks">
+        {% for task in tasks %}
+        <li class="task{% if task['completed'] %} is-done{% endif %}">
+          <form action="{{ url_for('toggle_task', task_id=task['id']) }}" method="post">
+            <input type="hidden" name="csrf_token" value="{{ session['csrf_token'] }}">
+            <button class="check" type="submit" aria-label="{{ 'Mark incomplete: ' if task['completed'] else 'Complete: ' }}{{ task['title'] }}">
+              {% if task['completed'] %}<span aria-hidden="true">&#10003;</span>{% endif %}
+            </button>
+          </form>
+          <span class="task-title">{{ task['title'] }}</span>
+          <form action="{{ url_for('delete_task', task_id=task['id']) }}" method="post">
+            <input type="hidden" name="csrf_token" value="{{ session['csrf_token'] }}">
+            <button class="delete" type="submit" aria-label="Delete: {{ task['title'] }}">Delete</button>
+          </form>
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <div class="empty">
+        <span class="empty-icon" aria-hidden="true">&#10003;</span>
+        <h3>A fresh start.</h3>
+        <p>Add your first task. Small steps count.</p>
+      </div>
+      {% endif %}
+      <p class="demo-note">This is a shared demo. Anyone can edit the list. Use sample tasks only.</p>
+    </section>
+    <footer>
+      <span>Built small. Ready to explain.</span>
+      <a href="{{ url_for('health') }}">Check app health <span aria-hidden="true">&#8599;</span></a>
+    </footer>
+  </main>
+</body>
+</html>

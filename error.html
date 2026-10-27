@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ code }} | Taskboard</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <main class="shell error-page">
+    <a class="brand" href="/">taskboard<span class="brand-dot">.</span></a>
+    <p class="eyebrow">ERROR {{ code }}</p>
+    <h1>Let's try that again.</h1>
+    <p class="lede">{{ message }}</p>
+    <a class="back" href="/">Back to your list</a>
+  </main>
+</body>
+</html>
