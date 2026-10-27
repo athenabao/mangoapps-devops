@@ -237,6 +237,4 @@ on October 26, 2026 (Pacific time). Recheck account-specific offers before launc
 
 ## AI assistance
 
-This starter was prepared with Codex. Review the files, run the checks yourself
-and describe the design in your own words. The take-home explicitly permits
-AI assistance as long as you can explain what you deploy.
+This starter was prepared with Codex. 
