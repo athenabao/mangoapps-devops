@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1160" height="930" viewBox="0 0 1160 930" role="img" aria-labelledby="title description">
+  <title id="title">Taskboard AWS architecture</title>
+  <desc id="description">Browser requests enter a public EC2 host through an internet gateway and port 80 security group. Nginx forwards to Gunicorn and Flask on loopback. The app reads and writes SQLite on encrypted EBS. CloudFormation provisions resources and Session Manager provides administration without SSH.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8" fill="#46634f"/></marker>
+    <marker id="arrowBack" markerWidth="8" markerHeight="8" refX="1" refY="4" orient="auto"><path d="M8 0L0 4L8 8" fill="#46634f"/></marker>
+    <marker id="adminArrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8" fill="#7c8799"/></marker>
+    <style>
+      text{font-family:Arial,Helvetica,sans-serif;fill:#22352c}
+      .title{font-size:30px;font-weight:700;letter-spacing:-.8px}
+      .sub{font-size:14px;fill:#67776c}
+      .label{font-size:17px;font-weight:700}
+      .small{font-size:13px;fill:#526358}
+      .tiny{font-size:12px;fill:#64776b}
+      .boundary{fill:#f8faf5;stroke:#c4d1bc;stroke-width:1.5;stroke-dasharray:7 5}
+      .node{fill:#fff;stroke:#b9c9af;stroke-width:1.5}
+      .path{fill:none;stroke:#46634f;stroke-width:2;marker-start:url(#arrowBack);marker-end:url(#arrow)}
+      .control{fill:none;stroke:#7c8799;stroke-width:1.6;stroke-dasharray:5 5;marker-end:url(#adminArrow)}
+    </style>
+  </defs>
+  <rect width="1160" height="930" fill="#f4f5ef"/>
+  <text x="42" y="52" class="title">Taskboard on AWS</text>
+  <text x="42" y="78" class="sub">One Linux host. A traceable request path. Persistent sample data.</text>
+
+  <rect x="58" y="110" width="500" height="78" rx="12" class="node"/>
+  <text x="308" y="142" text-anchor="middle" class="label">User's browser</text>
+  <text x="308" y="165" text-anchor="middle" class="small">Public app link and /health</text>
+
+  <rect x="30" y="226" width="1100" height="620" rx="18" class="boundary"/>
+  <text x="52" y="252" class="small">AWS VPC / public subnet</text>
+  <rect x="58" y="281" width="500" height="80" rx="12" class="node"/>
+  <text x="308" y="313" text-anchor="middle" class="label">Internet gateway + public IPv4</text>
+  <text x="308" y="338" text-anchor="middle" class="small">Security group: inbound TCP 80 only</text>
+  <path d="M308 190V279" class="path"/>
+  <rect x="348" y="192" width="217" height="28" rx="5" fill="#f4f5ef"/>
+  <text x="358" y="211" class="tiny">HTTP request and response</text>
+
+  <rect x="58" y="396" width="500" height="256" rx="14" fill="#eef4e6" stroke="#abc195" stroke-width="1.5"/>
+  <text x="80" y="422" class="small">EC2 - Amazon Linux 2023 - t3.micro</text>
+  <rect x="82" y="440" width="452" height="70" rx="10" class="node"/>
+  <text x="308" y="471" text-anchor="middle" class="label">Nginx reverse proxy</text>
+  <text x="308" y="494" text-anchor="middle" class="small">Public HTTP listener, port 80</text>
+  <path d="M308 363V438" class="path"/>
+
+  <rect x="82" y="566" width="452" height="64" rx="10" class="node"/>
+  <text x="308" y="591" text-anchor="middle" class="label">Gunicorn + Flask</text>
+  <text x="308" y="613" text-anchor="middle" class="small">Non-root process; systemd supervision</text>
+  <path d="M308 512V564" class="path"/>
+  <text x="326" y="542" class="tiny">127.0.0.1:8000</text>
+
+  <rect x="58" y="712" width="500" height="98" rx="12" class="node"/>
+  <text x="308" y="743" text-anchor="middle" class="label">SQLite database on encrypted EBS</text>
+  <text x="308" y="768" text-anchor="middle" class="small">/var/lib/mango-todo/tasks.sqlite3</text>
+  <text x="308" y="791" text-anchor="middle" class="tiny">8 GiB gp3 root volume; no database network port</text>
+  <path d="M308 632V710" class="path"/>
+  <text x="326" y="685" class="tiny">Local file reads and writes</text>
+
+  <rect x="683" y="110" width="410" height="105" rx="12" fill="#eef0f6" stroke="#c8cedc"/>
+  <text x="888" y="141" text-anchor="middle" class="label">CloudFormation</text>
+  <text x="888" y="165" text-anchor="middle" class="small">Creates network, IAM role, EC2 and EBS</text>
+  <text x="888" y="187" text-anchor="middle" class="tiny">First boot fetches a pinned public GitHub commit</text>
+  <path d="M888 217V390H560" class="control"/>
+  <text x="650" y="288" class="tiny">Bootstrap installs services</text>
+  <text x="650" y="309" class="tiny">Readiness signal gates stack success</text>
+
+  <rect x="683" y="446" width="410" height="141" rx="12" fill="#eef0f6" stroke="#c8cedc"/>
+  <text x="888" y="478" text-anchor="middle" class="label">Systems Manager Session Manager</text>
+  <text x="888" y="503" text-anchor="middle" class="small">Administrator uses the AWS console</text>
+  <text x="888" y="527" text-anchor="middle" class="small">Instance IAM role: SSM core permissions</text>
+  <text x="888" y="555" text-anchor="middle" class="tiny">Agent uses outbound HTTPS; no inbound SSH</text>
+  <path d="M681 554H592V600H536" class="control"/>
+
+  <text x="686" y="680" class="label">Accepted demo tradeoffs</text>
+  <text x="686" y="708" class="small">HTTP has no encryption in transit.</text>
+  <text x="686" y="732" class="small">One host is a single point of failure.</text>
+  <text x="686" y="756" class="small">EBS data survives restarts on the same volume.</text>
+  <text x="686" y="780" class="small">Stack deletion removes the root volume and data.</text>
+
+  <text x="42" y="883" class="tiny">Solid arrows: request/data path in both directions. Dashed arrows: provisioning or administration.</text>
+  <text x="42" y="906" class="tiny">No NAT Gateway, load balancer, RDS instance, Elastic IP or open SSH port in this deployment.</text>
+</svg>

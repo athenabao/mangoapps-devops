@@ -1,0 +1,10 @@
+flowchart TD
+  Browser["User's browser"] <-->|"HTTP request and response, port 80"| Gateway["Internet gateway and public IPv4"]
+  subgraph VPC["AWS VPC - public subnet"]
+    Gateway <-->|"Security group: inbound TCP 80"| Nginx["EC2 Amazon Linux 2023: Nginx"]
+    Nginx <-->|"127.0.0.1:8000"| App["EC2: non-root Gunicorn and Flask"]
+    App <-->|"Local file I/O"| DB["SQLite on encrypted EBS root volume"]
+  end
+  Admin["AWS console administrator"] --> SSM["Systems Manager Session Manager"]
+  SSM -.->|"Agent uses outbound HTTPS; no inbound SSH"| App
+  CFN["CloudFormation and pinned GitHub commit"] -.->|"Creates infrastructure and bootstraps app"| Nginx

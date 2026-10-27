@@ -1,0 +1,26 @@
+[Unit]
+Description=Taskboard Flask application
+After=network.target
+StartLimitIntervalSec=60
+StartLimitBurst=5
+
+[Service]
+Type=simple
+User=mangoapp
+Group=mangoapp
+WorkingDirectory=/opt/mango-todo
+EnvironmentFile=/etc/mango-todo.env
+Environment=PYTHONDONTWRITEBYTECODE=1
+ExecStart=/opt/mango-todo/venv/bin/gunicorn --no-control-socket --workers 1 --threads 2 --bind 127.0.0.1:8000 --access-logfile - --error-logfile - --timeout 30 app:create_app()
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=30
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/mango-todo
+
+[Install]
+WantedBy=multi-user.target
